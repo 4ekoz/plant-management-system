@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./plant.module.css";
-import {  FaMinus,  } from "react-icons/fa";
-import { BiHistory } from "react-icons/bi";
+import { FaMinus } from "react-icons/fa";
+import { BiHistory, BiSearch } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { Spinner } from "react-bootstrap";
 import { color, motion } from "framer-motion";
@@ -18,8 +18,24 @@ function PlantPage() {
   const [plants, setPlants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPlants, setFilteredPlants] = useState([]);
 
   const navigate = useNavigate();
+
+  // دالة البحث في النباتات
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    if (!value.trim()) {
+      setFilteredPlants(plants);
+      return;
+    }
+
+    const filtered = plants.filter(plant =>
+      plant.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredPlants(filtered);
+  };
 
   const fetchPlants = async () => {
     try {
@@ -30,7 +46,7 @@ function PlantPage() {
         navigate("/login");
         return;
       }
-      console.log("Using token from localStorage");
+
       const response = await axios.get(
         "https://green-world-vert.vercel.app/plant",
         {
@@ -39,20 +55,16 @@ function PlantPage() {
           },
         }
       );
-      console.log("API Response:", response.data);
 
       if (response.data.success) {
         if (Array.isArray(response.data.data)) {
           setPlants(response.data.data);
-          console.log(plants);
-          console.log("Plants loaded:", response.data.data.length);
+          setFilteredPlants(response.data.data);
         } else {
-          console.error("Plants data is not an array:", response.data.data);
           setError("Invalid data format received");
         }
       } else {
         setError("Failed to fetch plants");
-        console.error("API returned success: false");
       }
     } catch (err) {
       console.error("Error fetching plants:", err);
@@ -67,6 +79,51 @@ function PlantPage() {
       setLoading(false);
     }
   };
+
+  // دالة حذف النبتة
+  const deletePlant = async (plantId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please login first");
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.delete(
+        `https://green-world-vert.vercel.app/plant/${plantId}`,
+        {
+          headers: {
+            token: token,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        // تحديث كلا من plants و filteredPlants
+        const updatedPlants = plants.filter(plant => plant._id !== plantId);
+        setPlants(updatedPlants);
+
+        // تحديث filteredPlants بناءً على searchTerm الحالي
+        if (searchTerm) {
+          const updatedFiltered = updatedPlants.filter(plant =>
+            plant.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setFilteredPlants(updatedFiltered);
+        } else {
+          setFilteredPlants(updatedPlants);
+        }
+
+        toast.success("Plant deleted successfully");
+      } else {
+        toast.error(response.data.message || "Failed to delete plant");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error(err.response?.data?.message || "Error deleting plant");
+    }
+  };
+
   useEffect(() => {
     fetchPlants();
   }, [navigate]);
@@ -105,7 +162,22 @@ function PlantPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className={styles.title}>Plants List</h2>
+      <div className={styles.header}>
+        <div className={styles.searchAndTitle}>
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              placeholder="Search by plant name..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className={styles.searchInput}
+            />
+            <BiSearch size={20} className={styles.searchIcon} />
+          </div>
+          <h2 className={`${styles.title} ${styles.titleUnderSearch}`}>Plants List</h2>
+        </div>
+      </div>
+
       <div className={styles.tableWrapper}>
         <table className={styles.plantTable}>
           <thead>
@@ -123,16 +195,15 @@ function PlantPage() {
             </tr>
           </thead>
           <tbody>
-            {plants.length > 0 ? (
-              plants.map((plant) => (
+            {filteredPlants.length > 0 ? (
+              filteredPlants.map((plant) => (
                 <motion.tr
                   key={plant._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                    <td>{plant.name}</td>
-             
+                  <td>{plant.name}</td>
                   <td>{plant.scientificName}</td>
                   <td>{plant.category}</td>
                   <td>{plant.origin}</td>
@@ -155,12 +226,17 @@ function PlantPage() {
                     )}
                   </td>
                   <td className={styles.description}>{plant.description}</td>
-                  <td className={styles.status} style={{ textAlign: "center",display:"flex", justifyContent:"center", alignItems:"center", gap:"10px" }}>
-                    <Link to={""} style={{color:"white", backgroundColor:"#2c7a4b", padding:"4px", borderRadius:"50%",textAlign:"center",width:"30px", height:"30px", display:"flex", justifyContent:"center", alignItems:"center"}}>
-                    <BiHistory />
-
+                  <td className={styles.status} style={{ textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}>
+                    <Link
+                      to={`/dashboard/update-plant/${plant._id}`}
+                      style={{ color: "white", backgroundColor: "#2c7a4b", padding: "4px", borderRadius: "50%", textAlign: "center", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center" }}
+                    >
+                      <BiHistory />
                     </Link>
-                    <button style={{color:"white", backgroundColor:"red", padding:"4px", borderRadius:"50%",textAlign:"center",width:"30px", height:"30px", display:"flex", justifyContent:"center", alignItems:"center"}}>
+                    <button
+                      onClick={() => deletePlant(plant._id)}
+                      style={{ color: "white", backgroundColor: "red", padding: "4px", borderRadius: "50%", textAlign: "center", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center", border: "none", cursor: "pointer" }}
+                    >
                       <FaMinus />
                     </button>
                   </td>
@@ -168,11 +244,8 @@ function PlantPage() {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="10"
-                  style={{ textAlign: "center", padding: "20px" }}
-                >
-                  No plants found. Add some plants to see them here!
+                <td colSpan="10" style={{ textAlign: "center", padding: "20px" }}>
+                  {searchTerm ? "No plants found matching your search" : "No plants found. Add some plants to see them here!"}
                 </td>
               </tr>
             )}

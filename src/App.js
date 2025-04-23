@@ -17,6 +17,7 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Settings from './Components/Settings/Settings';
 import PlantPage from './Components/plant/plant';
 import AddPlant from "./Components/Add-plant/Add-plant";
+import UpdatePlant from "./Components/UpdatePlant/UpdatePlant";
 
 // 🔑 معرف العميل من Google Cloud Console
 const clientId = "216879394932-cg3plgmhph894rsls1ruarb4r4uh47dp.apps.googleusercontent.com";
@@ -37,10 +38,11 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <ProtectedRoute element={<Dashboard />} />,
         children: [
-          { index: true, element: <Dashboard /> },
+          { index: true, element: <AddPlant /> },
           { path: "add-plant", element: <AddPlant /> },
           { path: "settings", element: <Settings /> },
-          { path: "plant", element: <PlantPage /> }
+          { path: "plant", element: <PlantPage /> },
+          { path: "update-plant/:id", element: <UpdatePlant /> }
         ]
       },
       { path: "*", element: <Notfound /> }
