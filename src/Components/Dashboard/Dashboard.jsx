@@ -18,7 +18,13 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get('https://green-world-vert.vercel.app/auth/profile');
+                const token = localStorage.getItem('token');
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                };
+                const response = await axios.get('https://green-world-vert.vercel.app/auth/profile', config);
                 setUserData(response.data.data);
                 setLoading(false);
             } catch (err) {

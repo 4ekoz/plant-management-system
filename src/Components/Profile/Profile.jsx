@@ -13,12 +13,19 @@ export default function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get('https://green-world-vert.vercel.app/auth/profile');
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        };
+
+        const response = await axios.get('https://green-world-vert.vercel.app/auth/profile', config);
         setProfileData(response.data.data);
 
         // إذا كان المستخدم أدمن، قم بجلب جميع المستخدمين
         if (response.data.data.role === "admin") {
-          const usersResponse = await axios.get('https://green-world-vert.vercel.app/auth/users');
+          const usersResponse = await axios.get('https://green-world-vert.vercel.app/auth/users', config);
           setAllUsers(usersResponse.data.data);
         }
 
@@ -36,6 +43,15 @@ export default function Profile() {
   if (error) return <div className={styles.error}>{error}</div>;
   if (!profileData) return <div className={styles.error}>No profile data found</div>;
 
+  // تحديد البيانات التي سيتم عرضها (عدم عرض البيانات الحساسة)
+  const safeUserData = {
+    "Username": profileData.userName,
+    "Email": profileData.email,
+    "Role": profileData.role,
+    "Account Status": profileData.isVerified ? "Verified" : "Not Verified",
+    "Member Since": new Date(profileData.createdAt).toLocaleDateString()
+  };
+
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profileCard}>
@@ -43,23 +59,17 @@ export default function Profile() {
           <FaUser className={styles.profileIcon} />
           <h2>Profile Information</h2>
         </div>
-        <div className={styles.profileInfo}>
-          <div className={styles.infoItem}>
-            <label>Username:</label>
-            <span>{profileData.userName}</span>
-          </div>
-          <div className={styles.infoItem}>
-            <label>Email:</label>
-            <span>{profileData.email}</span>
-          </div>
-          <div className={styles.infoItem}>
-            <label>Role:</label>
-            <span>{profileData.role}</span>
-          </div>
-          <div className={styles.infoItem}>
-            <label>Account Created:</label>
-            <span>{new Date(profileData.createdAt).toLocaleDateString()}</span>
-          </div>
+        <div className={styles.profileTable}>
+          <table>
+            <tbody>
+              {Object.entries(safeUserData).map(([key, value]) => (
+                <tr key={key}>
+                  <th>{key}</th>
+                  <td>{value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -73,8 +83,8 @@ export default function Profile() {
                 <th>Username</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Verified</th>
-                <th>Created At</th>
+                <th>Status</th>
+                <th>Member Since</th>
               </tr>
             </thead>
             <tbody>
@@ -83,7 +93,7 @@ export default function Profile() {
                   <td>{user.userName}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>{user.isVerified ? "Yes" : "No"}</td>
+                  <td>{user.isVerified ? "Verified" : "Not Verified"}</td>
                   <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
