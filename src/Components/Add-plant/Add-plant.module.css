@@ -204,3 +204,168 @@
     background: #F0FFF4;
     color: #2F855A;
 }
+
+.addPlantContainer {
+    padding: 20px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.title {
+    color: #4A3728;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.formContainer {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4A3728;
+    font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+}
+
+.formGroup textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.uploadSection {
+    border: 2px dashed #ddd;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.uploadSection:hover {
+    border-color: #2c7a4b;
+    background: rgba(44, 122, 75, 0.05);
+}
+
+.uploadIcon {
+    font-size: 2rem;
+    color: #2c7a4b;
+    margin-bottom: 1rem;
+}
+
+.submitButton {
+    background: #2c7a4b;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+.submitButton:hover {
+    background: #236b3f;
+}
+
+.submitButton:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .addPlantContainer {
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .formContainer {
+        padding: 1rem;
+        margin: 0 10px;
+        border-radius: 8px;
+    }
+
+    .formGroup {
+        margin-bottom: 1rem;
+    }
+
+    .formGroup label {
+        font-size: 0.9rem;
+    }
+
+    .formGroup input,
+    .formGroup select,
+    .formGroup textarea {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .uploadSection {
+        padding: 1rem;
+    }
+
+    .uploadIcon {
+        font-size: 1.5rem;
+    }
+
+    .submitButton {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 320px) {
+    .addPlantContainer {
+        padding: 5px;
+    }
+
+    .title {
+        font-size: 1.2rem;
+    }
+
+    .formContainer {
+        padding: 0.8rem;
+    }
+
+    .formGroup input,
+    .formGroup select,
+    .formGroup textarea {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+}

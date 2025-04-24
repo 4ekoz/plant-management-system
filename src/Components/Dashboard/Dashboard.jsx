@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, Outlet, Navigate } from 'react-router-dom';
 import styles from './Dashboard.module.css';
 import dashboardHome from './dashboardhome.png';
@@ -7,9 +7,11 @@ import Logout from '../Logout/Logout';
 import plant from "../Dashboard/plant.png";
 import addPlantIcon from "../Add-plant/Addplanticon.png";
 import { motion } from 'framer-motion';
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Dashboard() {
     const location = useLocation();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const menuItemVariants = {
         hidden: { x: -50, opacity: 0 },
@@ -29,6 +31,10 @@ export default function Dashboard() {
         return location.pathname === path;
     };
 
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
     // إذا كان المستخدم في الصفحة الرئيسية للداشبورد، سيتم توجيهه إلى صفحة Add Plant
     if (location.pathname === '/dashboard') {
         return <Navigate to="/dashboard/add-plant" replace />;
@@ -36,8 +42,23 @@ export default function Dashboard() {
 
     return (
         <div className={styles.container}>
+            <button
+                className={styles.menuButton}
+                onClick={toggleSidebar}
+                aria-label="Toggle menu"
+            >
+                {isSidebarOpen ? <FaTimes /> : <FaBars />}
+            </button>
+
+            {isSidebarOpen && (
+                <div
+                    className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.show : ''}`}
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             <motion.div
-                className={styles.sidebar}
+                className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}
                 initial={{ x: -250 }}
                 animate={{ x: 0 }}
                 transition={{ duration: 0.5 }}
@@ -52,6 +73,7 @@ export default function Dashboard() {
                         <Link
                             to="/dashboard/add-plant"
                             className={`${styles.menuItem} ${isActive('/dashboard/add-plant') ? styles.active : ''}`}
+                            onClick={() => setIsSidebarOpen(false)}
                         >
                             <img src={addPlantIcon} alt="Add Plant" className={styles.icon} />
                             <span>Add plant</span>
@@ -67,6 +89,7 @@ export default function Dashboard() {
                         <Link
                             to="/dashboard/plant"
                             className={`${styles.menuItem} ${isActive('/dashboard/plant') ? styles.active : ''}`}
+                            onClick={() => setIsSidebarOpen(false)}
                         >
                             <img src={plant} alt="Plant" className={styles.icon} />
                             <span>Plant</span>
@@ -83,6 +106,7 @@ export default function Dashboard() {
                             <Link
                                 to="/dashboard/settings"
                                 className={`${styles.menuItem} ${isActive('/dashboard/settings') ? styles.active : ''}`}
+                                onClick={() => setIsSidebarOpen(false)}
                             >
                                 <img src={settingsIcon} alt="Settings" className={styles.icon} />
                                 <span>Settings</span>

@@ -1,10 +1,12 @@
 .updateContent {
     padding: 20px;
+    background-color: #ffffff;
 }
 
 .formSection {
     max-width: 800px;
     margin: 0 auto;
+    background-color: #ffffff;
 }
 
 .inputRow {
@@ -22,29 +24,300 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
+    color: #333333;
 }
 
-.formGroup input {
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
+    padding: 0.8rem;
+    border: 1px solid #000000;
     border-radius: 4px;
+    background-color: #ffffff !important;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Remove blue from autocomplete suggestions */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Remove blue from datalist options */
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+/* Style autocomplete suggestions */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    background-color: #ffffff !important;
+}
+
+/* Remove blue highlight from autocomplete options */
+input:not([type="submit"]):not([type="file"]):not([type="radio"]):not([type="checkbox"]) {
+    background-color: #ffffff !important;
+}
+
+/* Firefox specific styles */
+input:-moz-autofill,
+input:-moz-autofill:focus {
+    background-color: #ffffff !important;
+}
+
+/* Microsoft Edge specific styles */
+input:-ms-input-placeholder {
+    background-color: #ffffff !important;
+}
+
+/* Remove blue selection background */
+.formGroup input::selection,
+.formGroup select::selection,
+.formGroup textarea::selection {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #000000;
+}
+
+.formGroup input::-moz-selection,
+.formGroup select::-moz-selection,
+.formGroup textarea::-moz-selection {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #000000;
+}
+
+/* Override browser default styles */
+input:-internal-autofill-selected {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+}
+
+/* Remove blue from dropdown */
+input:-webkit-autofill-selected,
+select:-webkit-autofill-selected {
+    background-color: #ffffff !important;
+}
+
+/* Style for autocomplete dropdown */
+input::-webkit-input-placeholder {
+    /* Chrome/Safari/Opera */
+    background-color: #ffffff !important;
+}
+
+::-webkit-calendar-picker-indicator {
+    background-color: #ffffff !important;
+}
+
+/* Remove highlight from autocomplete suggestions */
+input:-webkit-autofill-selected {
+    background-color: #ffffff !important;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="email"],
+.formGroup input[type="password"],
+.formGroup input[type="search"],
+.formGroup input[type="url"],
+.formGroup input[type="tel"],
+.formGroup input[type="number"],
+.formGroup input[type="date"],
+.formGroup select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #ffffff !important;
+}
+
+.formGroup input:hover,
+.formGroup select:hover,
+.formGroup textarea:hover {
+    background-color: #ffffff !important;
+    border-color: #000000;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 1px #000000;
+    background-color: #ffffff !important;
+}
+
+/* Remove browser default styles and blue background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    transition: background-color 5000s ease-in-out 0s;
+    background-color: #ffffff !important;
+}
+
+/* Remove blue highlight on Chrome/Safari */
+input:-webkit-autofill {
+    -webkit-background-clip: text !important;
+}
+
+/* Firefox specific styles */
+.formGroup input:-moz-autofill,
+.formGroup select:-moz-autofill {
+    background-color: #ffffff !important;
+}
+
+/* Edge specific styles */
+.formGroup input,
+.formGroup select {
+    background-color: #ffffff !important;
+}
+
+.formGroup input:autofill,
+.formGroup select:autofill {
+    background-color: #ffffff !important;
 }
 
 .uploadArea {
-    border: 2px dashed #ddd;
+    border: 2px dashed #000000;
     padding: 20px;
     text-align: center;
     border-radius: 4px;
+    background-color: #ffffff;
 }
 
 .uploadButton {
     background: none;
     border: none;
-    color: #666;
+    color: #333333;
     cursor: pointer;
 }
 
 .uploadButton:hover {
-    color: #333;
+    color: #000000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .updateContent {
+        padding: 10px;
+        position: relative;
+    }
+
+    .formSection {
+        max-width: 100%;
+    }
+
+    .inputRow {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .formGroup {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .formGroup input,
+    .formGroup select,
+    .formGroup textarea {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        /* Prevent zoom on iOS */
+    }
+
+    /* Sidebar Toggle Button */
+    .sidebarToggle {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background: #2c7a4b;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Sidebar styles for mobile */
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100vh;
+        width: 250px;
+        background: white;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Overlay when sidebar is open */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+    }
+
+    .overlay.show {
+        display: block;
+    }
+}
+
+/* Ensure desktop layout remains unchanged */
+@media (min-width: 769px) {
+
+    .sidebarToggle,
+    .overlay {
+        display: none;
+    }
+
+    .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .updateContent {
+        padding: 15px;
+    }
+
+    .formGroup input,
+    .formGroup select,
+    .formGroup textarea {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
 }

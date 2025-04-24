@@ -226,19 +226,22 @@ function PlantPage() {
                     )}
                   </td>
                   <td className={styles.description}>{plant.description}</td>
-                  <td className={styles.status} style={{ textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}>
-                    <Link
-                      to={`/dashboard/update-plant/${plant._id}`}
-                      style={{ color: "white", backgroundColor: "#2c7a4b", padding: "4px", borderRadius: "50%", textAlign: "center", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center" }}
-                    >
-                      <BiHistory />
-                    </Link>
-                    <button
-                      onClick={() => deletePlant(plant._id)}
-                      style={{ color: "white", backgroundColor: "red", padding: "4px", borderRadius: "50%", textAlign: "center", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center", border: "none", cursor: "pointer" }}
-                    >
-                      <FaMinus />
-                    </button>
+                  <td className={styles.status}>
+                    <div className={styles.statusIcons}>
+                      <Link
+                        to={`/dashboard/update-plant/${plant._id}`}
+                        className={styles.statusIconSuccess}
+                        onClick={() => console.log('Updating plant with ID:', plant._id)}
+                      >
+                        <BiHistory />
+                      </Link>
+                      <button
+                        onClick={() => deletePlant(plant._id)}
+                        className={styles.statusIconError}
+                      >
+                        <FaMinus />
+                      </button>
+                    </div>
                   </td>
                 </motion.tr>
               ))

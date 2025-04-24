@@ -43,9 +43,8 @@
     overflow-x: auto;
     background: white;
     border-radius: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0;
-    padding: 10px;
+    margin: 1rem 0;
+    padding: 0;
 }
 
 .plantTable {
@@ -59,7 +58,7 @@
     background: #2c7a4b;
     color: white;
     padding: 12px;
-    text-align: left;
+    text-align: center;
     font-weight: 600;
     position: sticky;
     top: 0;
@@ -70,6 +69,7 @@
     padding: 12px;
     border-bottom: 1px solid #eee;
     vertical-align: middle;
+    text-align: center;
 }
 
 .plantTable tr:hover {
@@ -81,45 +81,79 @@
     height: 60px;
     object-fit: cover;
     border-radius: 8px;
-    transition: transform 0.2s;
-}
-
-.plantImage:hover {
-    transform: scale(2.5);
-    z-index: 2;
+    display: block;
+    margin: 0 auto;
 }
 
 .description {
     max-width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.description:hover {
-    white-space: normal;
-    overflow: visible;
+    text-align: center;
 }
 
 .status {
     text-align: center;
+    padding: 0;
+    width: 100px;
 }
 
 .statusIcons {
     display: flex;
-    gap: 0.5rem;
+    gap: 4px;
     justify-content: center;
     align-items: center;
+    margin: 0 auto;
+    padding: 0;
+    width: 100px;
+}
+
+.statusIconSuccess,
+.statusIconError {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
 .statusIconSuccess {
-    color: #2c7a4b;
-    font-size: 1.2rem;
+    color: white;
+    background-color: #2c7a4b;
+    text-decoration: none;
 }
 
 .statusIconError {
-    color: #dc3545;
-    font-size: 1.2rem;
+    color: white;
+    background-color: #dc3545;
+}
+
+/* Make sure the Status header text is centered */
+.plantTable th:last-child {
+    text-align: center;
+    padding: 12px 0;
+    width: 100px;
+}
+
+/* Ensure all cells in the last column have consistent width */
+.plantTable tr td:last-child {
+    width: 100px;
+    padding: 12px 0;
+}
+
+/* Add specific width to the table header */
+.plantTable thead tr th:last-child {
+    width: 100px;
+}
+
+/* Center the icons container */
+.plantTable td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .loadingContainer {
@@ -201,61 +235,188 @@
     padding: 0 20px;
 }
 
-.searchContainer {
-    display: flex;
-    align-items: center;
-    background: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
-    width: 300px;
-}
-
-.searchInput {
-    border: none;
-    outline: none;
-    padding: 8px;
-    font-size: 14px;
-    width: 100%;
-    background: transparent;
-}
-
-.searchIcon {
-    color: #2c7a4b;
-}
-
-.searchButton {
-    background-color: #2c7a4b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-
-.searchButton:hover {
-    background-color: #236b3f;
-}
-
-.searchButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
 .searchAndTitle {
     display: flex;
     flex-direction: column;
-    gap: 5px;
     align-items: flex-start;
+    width: 100%;
+    padding: 2rem 2rem 1rem;
+}
+
+.searchContainer {
+    position: relative;
+    width: 400px;
+    margin: 0;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    background-color: #fff;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.searchIcon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9e9e9e;
+    font-size: 1rem;
 }
 
 .titleUnderSearch {
-    margin-top: 5px;
-    margin-bottom: 15px;
-    padding-left: 12px;
+    margin: 1.5rem 0 2rem;
+    color: #2c7a4b;
+    font-size: 1.5rem;
+    font-weight: 600;
+    align-self: flex-start;
+}
+
+.tableWrapper {
+    margin-top: 0;
+    padding: 0 2rem;
+}
+
+.container {
+    padding: 1.5rem;
+    margin-left: 1rem;
+}
+
+.searchContainer {
+    margin-bottom: 1rem;
+    max-width: 300px;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 1px #000;
+}
+
+.title {
+    font-size: 1.5rem;
+    color: #2C7A4B;
+    margin: 1rem 0;
+}
+
+.tableContainer {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.table th {
+    background-color: #2C7A4B;
+    color: white;
+    text-align: left;
+    padding: 1rem;
+    font-weight: 500;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.plantImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.375rem;
+    object-fit: cover;
+}
+
+.actionButton {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.editButton {
+    background-color: #2C7A4B;
+    color: white;
+}
+
+.deleteButton {
+    background-color: #DC2626;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        margin-left: 0;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+    }
+
+    .searchAndTitle {
+        padding: 1.5rem 1rem 0.5rem;
+    }
+
+    .searchContainer {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .titleUnderSearch {
+        margin: 1rem 0 1.5rem;
+        font-size: 1.3rem;
+    }
+
+    .tableWrapper {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .title {
+        font-size: 1.25rem;
+    }
+
+    .searchAndTitle {
+        padding: 1rem 0.5rem 0.5rem;
+    }
+
+    .searchInput {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .searchIcon {
+        right: 0.8rem;
+    }
+
+    .titleUnderSearch {
+        margin: 0.8rem 0 1.2rem;
+        font-size: 1.2rem;
+    }
+
+    .tableWrapper {
+        padding: 0 0.5rem;
+    }
 }

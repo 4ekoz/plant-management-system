@@ -1,77 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import styles from './UpdatePlant.module.css';
 
+const validationSchema = Yup.object({
+    name: Yup.string().required('Plant name is required'),
+    scientificName: Yup.string().required('Scientific name is required'),
+    category: Yup.string().required('Category is required'),
+    origin: Yup.string().required('Origin is required'),
+    description: Yup.string().required('Description is required'),
+    wateringFrequency: Yup.string().required('Watering frequency is required'),
+    soilType: Yup.string().required('Soil type is required'),
+    temperatureRangeMax: Yup.number().required('Maximum temperature is required'),
+    temperatureRangeMin: Yup.number().required('Minimum temperature is required')
+});
+
 export default function UpdatePlant() {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const { id: plantId } = useParams();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    const isValidPlantId = (id) => {
-        return id && id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id);
-    };
-
-    useEffect(() => {
-        if (!isValidPlantId(plantId)) {
-            setError('Invalid plant ID. ID must be 24 characters long and contain only hexadecimal characters.');
-            return;
-        }
-
-        const fetchPlant = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get(`https://green-world-vert.vercel.app/plant/${plantId}`, {
-                    headers: {
-                        token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.data.success) {
-                    const plant = response.data.data;
-                    formik.setValues({
-                        name: plant.name || '',
-                        scientificName: plant.scientificName || '',
-                        category: plant.category || '',
-                        origin: plant.origin || '',
-                        description: plant.description || '',
-                        wateringFrequency: plant.wateringFrequency || '',
-                        soilType: plant.soilType || '',
-                        temperatureRange: {
-                            min: plant.temperatureRange?.min || '',
-                            max: plant.temperatureRange?.max || ''
-                        },
-                        image: null
-                    });
-                } else {
-                    setError(response.data.message || 'Failed to fetch plant data');
-                }
-            } catch (err) {
-                console.error('Fetch error:', err.response?.data);
-                setError(err.response?.data?.message || 'Failed to fetch plant details');
-            }
-        };
-
-        fetchPlant();
-    }, [plantId]);
-
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Name is required'),
-        scientificName: Yup.string().required('Scientific name is required'),
-        category: Yup.string().required('Category is required'),
-        origin: Yup.string().required('Origin is required'),
-        description: Yup.string().required('Description is required'),
-        wateringFrequency: Yup.string().required('Watering frequency is required'),
-        soilType: Yup.string().required('Soil type is required'),
-        temperatureRange: Yup.object({
-            min: Yup.number().required('Minimum temperature is required'),
-            max: Yup.number().required('Maximum temperature is required')
-        })
-    });
+    const [loading, setLoading] = useState(true);
+    const [currentImage, setCurrentImage] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -82,103 +33,137 @@ export default function UpdatePlant() {
             description: '',
             wateringFrequency: '',
             soilType: '',
-            temperatureRange: {
-                min: '',
-                max: ''
-            },
+            temperatureRangeMax: '',
+            temperatureRangeMin: '',
             image: null
         },
         validationSchema,
         onSubmit: async (values) => {
-            if (!isValidPlantId(plantId)) {
-                setError('Invalid plant ID. Cannot update plant.');
-                return;
-            }
-
             try {
-                setLoading(true);
-                setError(null);
+                const formData = new FormData();
+                formData.append('name', values.name);
+                formData.append('scientificName', values.scientificName);
+                formData.append('category', values.category);
+                formData.append('origin', values.origin);
+                formData.append('description', values.description);
+                formData.append('wateringFrequency', values.wateringFrequency);
+                formData.append('soilType', values.soilType);
+                formData.append('temperatureRangeMax', values.temperatureRangeMax);
+                formData.append('temperatureRangeMin', values.temperatureRangeMin);
 
-                const updateData = {
-                    name: values.name,
-                    scientificName: values.scientificName,
-                    category: values.category,
-                    origin: values.origin,
-                    description: values.description,
-                    wateringFrequency: values.wateringFrequency,
-                    soilType: values.soilType,
-                    temperatureRange: {
-                        min: parseInt(values.temperatureRange.min),
-                        max: parseInt(values.temperatureRange.max)
-                    }
-                };
+                if (values.image) {
+                    formData.append('image', values.image);
+                }
 
                 const token = localStorage.getItem('token');
-                const response = await axios.put(`https://green-world-vert.vercel.app/plant/${plantId}`, updateData, {
-                    headers: {
-                        'token': token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.data.success) {
-                    navigate('/dashboard/plant');
-                } else {
-                    setError(response.data.message || 'Failed to update plant');
+                if (!token) {
+                    toast.error('Please login first');
+                    navigate('/login');
+                    return;
                 }
-            } catch (err) {
-                console.error('Update error:', err.response?.data);
-                setError(err.response?.data?.message || 'An error occurred while updating the plant');
-            } finally {
-                setLoading(false);
+
+                await axios.put(
+                    `https://green-world-vert.vercel.app/plant/${id}`,
+                    formData,
+                    {
+                        headers: {
+                            token: token,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+
+                toast.success('Plant updated successfully!');
+                navigate('/dashboard/plant');
+            } catch (error) {
+                console.error('Error updating plant:', error);
+                if (error.response?.status === 401) {
+                    toast.error('Session expired. Please login again');
+                    navigate('/login');
+                } else {
+                    toast.error(error.response?.data?.message || 'Error updating plant');
+                }
             }
         }
     });
 
-    const categories = [
-        'ornamental',
-        'medicinal & aromatic',
-        'fruit',
-        'shade',
-        'air-purifying'
-    ];
+    useEffect(() => {
+        const fetchPlantData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    toast.error('Please login first');
+                    navigate('/login');
+                    return;
+                }
 
-    const wateringFrequencies = [
-        'daily',
-        'every other day',
-        'weekly',
-        'biweekly',
-        'monthly'
-    ];
+                const response = await axios.get(
+                    `https://green-world-vert.vercel.app/plant/${id}`,
+                    {
+                        headers: {
+                            token: token
+                        }
+                    }
+                );
+
+                const plantData = response.data.data;
+                formik.setValues({
+                    name: plantData.name || '',
+                    scientificName: plantData.scientificName || '',
+                    category: plantData.category || '',
+                    origin: plantData.origin || '',
+                    description: plantData.description || '',
+                    wateringFrequency: plantData.wateringFrequency || '',
+                    soilType: plantData.soilType || '',
+                    temperatureRangeMax: plantData.temperatureRange?.max || '',
+                    temperatureRangeMin: plantData.temperatureRange?.min || '',
+                    image: null
+                });
+
+                if (plantData.Image?.secure_url) {
+                    setCurrentImage(plantData.Image.secure_url);
+                }
+
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching plant data:', error);
+                if (error.response?.status === 401) {
+                    toast.error('Session expired. Please login again');
+                    navigate('/login');
+                } else {
+                    toast.error('Error loading plant data');
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchPlantData();
+    }, [id, navigate]);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading...</div>;
+    }
 
     return (
-        <div className={styles.updatePlantContainer}>
-            <h2>Update Your Plant</h2>
-            {error && <div className={styles.error}>{error}</div>}
-            <form onSubmit={formik.handleSubmit} className={styles.form}>
+        <div className={styles.updateContainer}>
+            <h2 className={styles.title}>Update Your Plant</h2>
+            <div className={styles.formContainer}>
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                         <label>Name</label>
                         <input
                             type="text"
-                            name="name"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.name}
+                            {...formik.getFieldProps('name')}
                         />
                         {formik.touched.name && formik.errors.name && (
                             <div className={styles.error}>{formik.errors.name}</div>
                         )}
                     </div>
-
                     <div className={styles.formGroup}>
                         <label>Scientific Name</label>
                         <input
                             type="text"
-                            name="scientificName"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.scientificName}
+                            {...formik.getFieldProps('scientificName')}
                         />
                         {formik.touched.scientificName && formik.errors.scientificName && (
                             <div className={styles.error}>{formik.errors.scientificName}</div>
@@ -190,31 +175,23 @@ export default function UpdatePlant() {
                     <div className={styles.formGroup}>
                         <label>Category</label>
                         <select
-                            name="category"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.category}
+                            {...formik.getFieldProps('category')}
                         >
-                            <option value="">Select Category</option>
-                            {categories.map(category => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
+                            <option value="">Select category</option>
+                            <option value="indoor">Indoor</option>
+                            <option value="outdoor">Outdoor</option>
+                            <option value="medicinal">Medicinal & Aromatic</option>
+                            <option value="shade">Shade</option>
                         </select>
                         {formik.touched.category && formik.errors.category && (
                             <div className={styles.error}>{formik.errors.category}</div>
                         )}
                     </div>
-
                     <div className={styles.formGroup}>
                         <label>Origin</label>
                         <input
                             type="text"
-                            name="origin"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.origin}
+                            {...formik.getFieldProps('origin')}
                         />
                         {formik.touched.origin && formik.errors.origin && (
                             <div className={styles.error}>{formik.errors.origin}</div>
@@ -224,11 +201,9 @@ export default function UpdatePlant() {
 
                 <div className={styles.formGroup}>
                     <label>Description</label>
-                    <textarea
-                        name="description"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.description}
+                    <input
+                        type="text"
+                        {...formik.getFieldProps('description')}
                     />
                     {formik.touched.description && formik.errors.description && (
                         <div className={styles.error}>{formik.errors.description}</div>
@@ -239,32 +214,30 @@ export default function UpdatePlant() {
                     <div className={styles.formGroup}>
                         <label>Watering Frequency</label>
                         <select
-                            name="wateringFrequency"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.wateringFrequency}
+                            {...formik.getFieldProps('wateringFrequency')}
                         >
-                            <option value="">Select Frequency</option>
-                            {wateringFrequencies.map(frequency => (
-                                <option key={frequency} value={frequency}>
-                                    {frequency}
-                                </option>
-                            ))}
+                            <option value="">Select frequency</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Bi-weekly</option>
+                            <option value="monthly">Monthly</option>
                         </select>
                         {formik.touched.wateringFrequency && formik.errors.wateringFrequency && (
                             <div className={styles.error}>{formik.errors.wateringFrequency}</div>
                         )}
                     </div>
-
                     <div className={styles.formGroup}>
                         <label>Soil Type</label>
-                        <input
-                            type="text"
-                            name="soilType"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.soilType}
-                        />
+                        <select
+                            {...formik.getFieldProps('soilType')}
+                        >
+                            <option value="">Select soil type</option>
+                            <option value="sandy">Sandy</option>
+                            <option value="clay">Clay</option>
+                            <option value="loamy">Loamy</option>
+                            <option value="peaty">Peaty</option>
+                            <option value="chalky">Chalky</option>
+                        </select>
                         {formik.touched.soilType && formik.errors.soilType && (
                             <div className={styles.error}>{formik.errors.soilType}</div>
                         )}
@@ -276,46 +249,47 @@ export default function UpdatePlant() {
                         <label>Temperature Range (Max)</label>
                         <input
                             type="number"
-                            name="temperatureRange.max"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.temperatureRange.max}
+                            {...formik.getFieldProps('temperatureRangeMax')}
                         />
-                        {formik.touched.temperatureRange?.max && formik.errors.temperatureRange?.max && (
-                            <div className={styles.error}>{formik.errors.temperatureRange.max}</div>
+                        {formik.touched.temperatureRangeMax && formik.errors.temperatureRangeMax && (
+                            <div className={styles.error}>{formik.errors.temperatureRangeMax}</div>
                         )}
                     </div>
-
                     <div className={styles.formGroup}>
                         <label>Temperature Range (Min)</label>
                         <input
                             type="number"
-                            name="temperatureRange.min"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.temperatureRange.min}
+                            {...formik.getFieldProps('temperatureRangeMin')}
                         />
-                        {formik.touched.temperatureRange?.min && formik.errors.temperatureRange?.min && (
-                            <div className={styles.error}>{formik.errors.temperatureRange.min}</div>
+                        {formik.touched.temperatureRangeMin && formik.errors.temperatureRangeMin && (
+                            <div className={styles.error}>{formik.errors.temperatureRangeMin}</div>
                         )}
                     </div>
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label>Upload Image</label>
+                    <label>Current Image</label>
+                    {currentImage && (
+                        <img
+                            src={currentImage}
+                            alt="Current plant"
+                            className={styles.currentImage}
+                        />
+                    )}
+                    <label className={styles.uploadLabel}>Upload New Image</label>
                     <input
                         type="file"
-                        name="image"
                         onChange={(event) => {
                             formik.setFieldValue('image', event.currentTarget.files[0]);
                         }}
+                        className={styles.fileInput}
                     />
                 </div>
 
-                <button type="submit" disabled={loading} className={styles.submitButton}>
-                    {loading ? 'Updating...' : 'Update Plant'}
+                <button type="submit" className={styles.submitButton} onClick={formik.handleSubmit}>
+                    Update Plant
                 </button>
-            </form>
+            </div>
         </div>
     );
 } 
