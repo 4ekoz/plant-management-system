@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, Navigate } from 'react-router-dom';
 import styles from './Dashboard.module.css';
 import dashboardHome from './dashboardhome.png';
-import settingsIcon from './Settings (1).png';
-import Logout from '../Logout/Logout';
 import plant from "../Dashboard/plant.png";
 import addPlantIcon from "../Add-plant/Addplanticon.png";
 import { motion } from 'framer-motion';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
+import Logout from '../Logout/Logout';
+import axios from 'axios';
 
 export default function Dashboard() {
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get('https://green-world-vert.vercel.app/auth/profile');
+                setUserData(response.data.data);
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching user data:', err);
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const menuItemVariants = {
         hidden: { x: -50, opacity: 0 },
@@ -42,6 +59,17 @@ export default function Dashboard() {
 
     return (
         <div className={styles.container}>
+            <div className={styles.header}>
+                <div className={styles.userProfileSection}>
+                    {!loading && userData && (
+                        <span className={styles.userName}>{userData.userName}</span>
+                    )}
+                    <Link to="/dashboard/profile" className={styles.profileLink}>
+                        <FaUser className={styles.profileIcon} />
+                    </Link>
+                </div>
+            </div>
+
             <button
                 className={styles.menuButton}
                 onClick={toggleSidebar}
@@ -97,22 +125,6 @@ export default function Dashboard() {
                     </motion.div>
 
                     <div className={styles.bottomMenu}>
-                        <motion.div
-                            custom={3}
-                            variants={menuItemVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            <Link
-                                to="/dashboard/settings"
-                                className={`${styles.menuItem} ${isActive('/dashboard/settings') ? styles.active : ''}`}
-                                onClick={() => setIsSidebarOpen(false)}
-                            >
-                                <img src={settingsIcon} alt="Settings" className={styles.icon} />
-                                <span>Settings</span>
-                            </Link>
-                        </motion.div>
-
                         <motion.div
                             custom={4}
                             variants={menuItemVariants}
